@@ -18,7 +18,17 @@ const app = express();
 connectDB();
 
 // 🔝 Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local Vite
+      "https://pastebinlite-frontendd.vercel.app" // production frontend
+    ],
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
+  })
+);
+
 app.use(express.json());
 
 /**
