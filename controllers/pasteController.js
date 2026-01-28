@@ -56,7 +56,7 @@ exports.getPaste = async (req, res) => {
   });
 };
 
-const Paste = require("../models/Paste");
+
 
 exports.getAllPastes = async (req, res) => {
   try {
