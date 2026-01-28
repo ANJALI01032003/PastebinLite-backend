@@ -1,31 +1,42 @@
 const Paste = require("../models/Paste");
 
 // CREATE
+const Paste = require("../models/Paste");
+
 exports.createPaste = async (req, res) => {
-  const { content, ttl_seconds, max_views } = req.body;
+  try {
+    const { content, ttl_seconds, max_views } = req.body;
 
-  if (!content || content.trim() === "") {
-    return res.status(400).json({ error: "Content required" });
+    if (!content || content.trim() === "") {
+      return res.status(400).json({ error: "Content required" });
+    }
+
+    let expiresAt = null;
+    if (ttl_seconds) {
+      expiresAt = new Date(Date.now() + Number(ttl_seconds) * 1000);
+    }
+
+    const paste = await Paste.create({
+      content,
+      expiresAt,
+      maxViews: max_views ?? null,
+      remainingViews: max_views ?? null
+    });
+
+    const BASE_URL =
+      process.env.BASE_URL ||
+      "https://pastebinlite-backend.onrender.com";
+
+    return res.status(201).json({
+      id: paste.id,
+      url: `${BASE_URL}/p/${paste.id}`
+    });
+  } catch (err) {
+    console.error("Create paste error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
-
-  let expiresAt = null;
-  if (ttl_seconds) {
-    expiresAt = new Date(Date.now() + ttl_seconds * 1000);
-  }
-
-  const paste = await Paste.create({
-    content,
-    expiresAt,
-    maxViews: max_views || null,
-    remainingViews: max_views || null
-  });
-
-  res.status(201).json({
-    id: paste.id,
-    url: `${process.env.BASE_URL}/p/${paste.id}`
-  });
-  
 };
+
 
 // FETCH
 exports.getPaste = async (req, res) => {
