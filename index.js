@@ -3,12 +3,11 @@ require("dotenv").config();
 
 // 🔝 Core imports
 const express = require("express");
-const cors = require("cors");
 
 // 🔝 Database
 const { connectDB, sequelize } = require("./config/db");
 
-// 🔝 Models (load once)
+// 🔝 Models
 const Paste = require("./models/Paste");
 
 // 🔝 App init
@@ -17,30 +16,32 @@ const app = express();
 // 🔝 Connect DB
 connectDB();
 
-// 🔝 Middleware
+/**
+ * 🔥 MIDDLEWARE (SIMPLE + BULLETPROOF)
+ * Ye hi 405 + CORS + OPTIONS sab solve karega
+ */
+app.use(express.json());
+
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://pastebinlite-frontendd.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://pastebinlite-frontendd.vercel.app"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
+
   next();
 });
-
-
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173", // local Vite
-      "https://pastebinlite-frontendd.vercel.app" // production frontend
-    ],
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"]
-  })
-);
-
-app.use(express.json());
 
 /**
  * Health check
@@ -67,9 +68,7 @@ app.get("/p/:id", async (req, res) => {
     const paste = await Paste.findByPk(req.params.id);
     if (!paste) return res.status(404).send("Paste not found");
 
-    const now = Date.now();
-
-    if (paste.expiresAt && now > paste.expiresAt.getTime()) {
+    if (paste.expiresAt && Date.now() > paste.expiresAt.getTime()) {
       return res.status(404).send("Paste expired");
     }
 
@@ -84,9 +83,7 @@ app.get("/p/:id", async (req, res) => {
     res.send(`
       <!DOCTYPE html>
       <html>
-        <head>
-          <title>Paste</title>
-        </head>
+        <head><title>Paste</title></head>
         <body>
           <pre>${paste.content
             .replace(/</g, "&lt;")
