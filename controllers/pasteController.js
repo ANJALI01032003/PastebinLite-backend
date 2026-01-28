@@ -54,3 +54,17 @@ exports.getPaste = async (req, res) => {
     expires_at: paste.expiresAt
   });
 };
+
+const Paste = require("../models/Paste");
+
+exports.getAllPastes = async (req, res) => {
+  try {
+    const pastes = await Paste.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(pastes);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+

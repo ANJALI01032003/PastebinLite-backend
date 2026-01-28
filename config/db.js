@@ -1,8 +1,14 @@
 const { Sequelize } = require("sequelize");
 
-const sequelize = new Sequelize(process.env.DB_URL, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
-  logging: false
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
 });
 
 const connectDB = async () => {
@@ -10,7 +16,7 @@ const connectDB = async () => {
     await sequelize.authenticate();
     console.log("PostgreSQL Connected");
   } catch (err) {
-    console.error(err);
+    console.error("DB Connection Error:", err);
   }
 };
 

@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+app.options("*", cors());   
 const { connectDB, sequelize } = require("./config/db");
 
 require("./models/Paste");
