@@ -6,8 +6,8 @@ const {
   getAllPastes
 } = require("../controllers/pasteController");
 
-router.get("/", getAllPastes);  
-router.post("/", createPaste);
-router.get("/:id", getPaste);
+router.post("/pastes", createPaste);
+router.get("/pastes", getAllPastes);
+router.get("/pastes/:id", getPaste);
 
 module.exports = router;

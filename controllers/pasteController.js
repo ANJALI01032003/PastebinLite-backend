@@ -24,6 +24,7 @@ exports.createPaste = async (req, res) => {
     id: paste.id,
     url: `${process.env.BASE_URL}/p/${paste.id}`
   });
+  
 };
 
 // FETCH
