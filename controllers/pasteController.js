@@ -1,7 +1,7 @@
 const Paste = require("../models/Paste");
 
 // CREATE
-const Paste = require("../models/Paste");
+
 
 exports.createPaste = async (req, res) => {
   try {
